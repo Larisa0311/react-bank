@@ -1,0 +1,53 @@
+.field {
+  padding: 0px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field__label {
+  font-size: 14px;
+  color: #1d1d1f;
+}
+
+.field__input {
+  border: 1px solid gray;
+  background-color: #ffffff;
+
+  padding: 20px 16px;
+  border-radius: 12px;
+
+  font-size: 14px;
+
+  &::placeholder {
+    color: #e9e8eb;
+  }
+
+  color: #1d1d1f;
+
+  transition: border-color 0.3s;
+
+  &:hover {
+    border-color: #775ce5;
+  }
+
+  &:focus {
+    border-color: rgb(116, 60, 116);
+  }
+}
+
+.validation {
+  &--active {
+    border-color: red !important;
+  }
+}
+
+.field__error {
+  color: #f23152;
+  font-size: 12px;
+  display: none;
+
+  &--active {
+    display: block;
+  }
+}

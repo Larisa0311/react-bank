@@ -1,3 +1,12 @@
+:root {
+  background-color: rgb(20, 14, 14);
+}
+
+html {
+  min-height: 100%;
+  display: grid;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -5,4 +14,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  max-width: 393px;
+  width: 100%;
+  margin: auto;
+  height: 100%;
+  border-radius: 24px;
+
+  background-color: #ffffff;
 }

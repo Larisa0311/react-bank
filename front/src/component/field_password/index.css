@@ -1,0 +1,90 @@
+.field {
+  padding: 0px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field__label {
+  font-size: 14px;
+  color: #1d1d1f;
+}
+
+.field__input {
+  border: 1px solid gray;
+  background-color: #ffffff;
+
+  padding: 20px 16px;
+  border-radius: 12px;
+
+  font-size: 14px;
+
+  &::placeholder {
+    color: #e9e8eb;
+  }
+
+  color: #1d1d1f;
+
+  transition: border-color 0.3s;
+
+  &:hover {
+    border-color: #775ce5;
+  }
+
+  &:focus {
+    border-color: rgb(116, 60, 116);
+  }
+}
+
+.field__error {
+  color: #f23152;
+  font-size: 12px;
+  display: none;
+
+  &--active {
+    display: block;
+  }
+}
+
+.field--password {
+  .field__wrapper {
+    width: 100%;
+    display: grid;
+
+    position: relative;
+
+    .field__icon {
+      cursor: pointer;
+      transition: opacity 0.7s;
+
+      &:hover {
+        opacity: 0.7;
+      }
+
+      display: block;
+      width: 20px;
+      height: 20px;
+
+      background-image: url("password_hide.svg");
+      background-size: cover;
+
+      &[show] {
+        background-image: url("password_show.svg");
+      }
+
+      position: absolute;
+      right: 20px;
+      top: calc(50% - 10px);
+    }
+  }
+
+  .field__input {
+    padding-right: calc(16px + 20px + 16px);
+  }
+}
+
+.validation {
+  &--active {
+    border-color: red !important;
+  }
+}
