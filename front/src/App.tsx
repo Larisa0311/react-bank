@@ -1,51 +1,117 @@
-import React from "react";
+import React, {
+  // useState, useEffect, 
+  useReducer, 
+  // useRef, useMemo, useCallback, memo, lazy, Suspense, 
+  createContext, 
+  // useContext,
+} from "react";
 
-import { SignupPage } from "./container/signup";
-import { WelcomPage } from "./page/welcom_page";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SignupConfirmPage } from "./container/signup-confirm";
-import { SigninPage } from "./container/signin";
+import { BrowserRouter, Routes, Route, 
+  // Link, Navigate, useNavigate, useParams, 
+}  from "react-router-dom";
 
-function App() {
+import WelcomePage from "./page/welcome";
+import SignupPage from "./page/signup";
+import SignupConfirmPage from "./page/signup -confirm";
+
+import AuthRoute from "./component/auth-route";
+import PrivateAuthRoute from "./component/private-auth-route";
+
+import { loadSession, saveSession } from "./utils/session";
+
+
+const session = loadSession();
+
+type AuthDataType = {
+  token: string | null;
+  user: { [key: string]: any};
+}
+
+type AUTH_DATA_ACTION = {
+  type: AUTH_DATA_ACTION_TYPE;
+  payload?: any;
+};
+
+export enum AUTH_DATA_ACTION_TYPE {
+  LOGIN,
+  LOGOUT,
+}
+
+type AuthContextType = {
+  state: AuthDataType;
+  dispatch: React.Dispatch<AUTH_DATA_ACTION>;
+};
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+const notSigninUser = {
+  token: "",
+  user: {},
+};
+
+const authDataReducer: React.Reducer<AuthDataType, AUTH_DATA_ACTION> = (
+  state: AuthDataType,
+  action: AUTH_DATA_ACTION 
+) => {
+  switch (action.type) {
+    case AUTH_DATA_ACTION_TYPE.LOGIN:
+      saveSession(action.payload);
+      const session = loadSession();
+      return session;
+    case AUTH_DATA_ACTION_TYPE.LOGOUT:
+      saveSession();  
+
+      return notSigninUser;
+      default:
+        return state;
+  }
+};
+const authDataInit = session ? session : notSigninUser;
+
+
+
+const App: React.FC<{}> = () => {
+const [authData, authDataDispatch] = useReducer(
+  authDataReducer,
+  authDataInit
+);
+
+const authContextData = {
+  state: authData,
+  dispatch: authDataDispatch,
+}
+
   return (
-    //   <AuthContext.Provider value={authContextData}>
+   <AuthContext.Provider value={authContextData}>
     <BrowserRouter>
       <Routes>
-        <Route
-          index
+     <Route 
+      index 
+        element={
+          <AuthRoute>
+              <WelcomePage />
+          </AuthRoute>} 
+      />
+      <Route 
+        path="/signup"
           element={
-            // <AuthRoute>
-            <WelcomPage />
-            // </AuthRoute>
+            <AuthRoute>
+              <SignupPage />
+            </AuthRoute>
           }
-        />
-        <Route
-          path="/signup"
+      />
+      <Route 
+        path="/signup-confirm"
           element={
-            // <AuthRoute>
-            <SignupPage />
-            // </AuthRoute>
+            <PrivateAuthRoute>
+              <SignupConfirmPage />
+            </PrivateAuthRoute>
           }
-        />
-        <Route
-          path="/signin"
-          element={
-            // <AuthRoute>
-            <SigninPage />
-            // </AuthRoute>
-          }
-        />
-        <Route
-          path="/signup-confirm"
-          element={
-            // <AuthRoute>
-            <SignupConfirmPage />
-            // </AuthRoute>
-          }
-        />
+      />
+   
       </Routes>
     </BrowserRouter>
-    //
+    </AuthContext.Provider>
   );
 }
 

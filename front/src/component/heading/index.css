@@ -1,16 +1,10 @@
-.heading {
-	display: flex;
-	  flex-direction: column;
-	  align-items: center;
-	  gap: 16px
-  }
-  
-  .heading__title {
-	font-size: 24px;
-	  color: #121212;
-  }
-  
-  .heading__info {
+.heading__title {
+color: #121212;
+font-size: 24px;
+font-weight: 500;
+}
+
+.heading__subtitle {
+	color: #939199;
 	font-size: 14px;
-	  color: #939199;
-  }
+}

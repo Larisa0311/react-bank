@@ -12,7 +12,7 @@ router.use('/', auth)
 // Використовуйте інші файли роутів, якщо є
 
 router.get('/', (req, res) => {
-  // res.status(200).json('Hello World')
+  res.status(200).json('Hello World')
 })
 
 // Експортуємо глобальний роутер

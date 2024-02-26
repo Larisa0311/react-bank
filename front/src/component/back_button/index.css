@@ -1,9 +1,0 @@
-.back__button {
-	padding-left: 20px;
-	cursor: pointer;
-	transition: opacity 0.7s;
-
-	&:hover {
-		opacity: 0.7;
-	}
-}
