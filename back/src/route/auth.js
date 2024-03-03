@@ -1,7 +1,7 @@
-const express = require("express")
+const express = require('express')
 const router = express.Router()
 
-const { User } = require("../class/user")
+const { User } = require('../class/user')
 const { Confirm } = require('../class/confirm')
 const { Session } = require('../class/session')
 // const { Notification } = require('../class/notification')
@@ -13,17 +13,18 @@ User.create({
   firstname: 'Larysa',
   lastname: 'Zubenko',
   email: "zubenko0311@gmail.com",
-  password: 'lZ234567',
+  password: 'lZ123456',
 })
 
 User.create({
   firstname: 'Oleksandr',
   lastname: 'Zubenko',
   email: "alex0603@gmail.com",
-  password: 'aZ234567',
+  password: 'aZ654321',
 })
 
-router.post("/signup", function (req, res) {
+router.post('/signup', function (req, res) {
+  try {
   const { firstname, lastname, email, password } = req.body
   console.log(req.body);
 
@@ -35,8 +36,7 @@ router.post("/signup", function (req, res) {
       message: "Error. There are no required fields",
     })
   }
-
-  try {
+  
     const user = User.getByEmail(email)
 
     if (user) {

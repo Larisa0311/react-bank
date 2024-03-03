@@ -15,9 +15,15 @@ import AnotherAction from "../../component/another-action";
 import Alert from "../../component/alert";
 
 import {
-	Form, REG_EXP_EMAIL, REG_EXP_PASSWORD, REG_EXP_NAME, ALERT_STATUS, FIELD_ERROR, } from "../../utils/form";
+	Form, 
+	REG_EXP_EMAIL, 
+	REG_EXP_PASSWORD, 
+	REG_EXP_NAME, 
+	ALERT_STATUS, 
+	FIELD_ERROR, 
+} from "../../utils/form";
 
-import { saveSession, getTokenSession, getSession } from "../../utils/session";
+// import { saveSession, getTokenSession, getSession } from "../../utils/session";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../App";
 import { AUTH_DATA_ACTION_TYPE } from "../../App";
@@ -80,43 +86,44 @@ const SignupPage: React.FC = () => {
 			this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
 			try {
-				const res = await fetch("/signup", {
+				const res = await fetch(`/signup`, {
 					method: "POST",
 					headers: {
-						"Content-Type": "application/json",
+					  "Content-Type": "application/json",
 					},
 					body: this.convertData(),
-				});
-
-				const data = await res.json();
-
-				if (res.ok) {auth?.dispatch({
-					type: AUTH_DATA_ACTION_TYPE.LOGIN,
-					payload: data.session,
-				});
-			
-				navigate("/signup-confirm");
-			} else {
-				this.setAlert(ALERT_STATUS.ERROR,data.message);
-			}
-			} catch (error) {
-				this.setAlert(
+				  });
+		
+				  const data = await res.json();
+		
+				  if (res.ok) {
+					auth?.dispatch({
+					  type: AUTH_DATA_ACTION_TYPE.LOGIN,
+					  payload: data.session,
+					});
+		
+					navigate("/signup-confirm");
+				  } else {
+					this.setAlert(ALERT_STATUS.ERROR, data.message);
+				  }
+				} catch (error) {
+				  this.setAlert(
 					ALERT_STATUS.ERROR,
 					"Registration failed, please try again!"
-				);
-			}
-		}
-	 };
-
-	 convertData = () => {
-		return JSON.stringify({
-			[this.FIELD_NAME.FIRSTNAME]: this.value[this.FIELD_NAME.FIRSTNAME],
-			[this.FIELD_NAME.LASTNAME]: this.value[this.FIELD_NAME.LASTNAME],
-			[this.FIELD_NAME.EMAIL]: this.value[this.FIELD_NAME.EMAIL],
-			[this.FIELD_NAME.PASSWORD]: this.value[this.FIELD_NAME.PASSWORD],
-		});
-	 };
- }
+				  );
+				}
+			  }
+			};
+		
+			convertData = () => {
+			  return JSON.stringify({
+				[this.FIELD_NAME.FIRSTNAME]: this.value[this.FIELD_NAME.FIRSTNAME],
+				[this.FIELD_NAME.LASTNAME]: this.value[this.FIELD_NAME.LASTNAME],
+				[this.FIELD_NAME.EMAIL]: this.value[this.FIELD_NAME.EMAIL],
+				[this.FIELD_NAME.PASSWORD]: this.value[this.FIELD_NAME.PASSWORD],
+			  });
+			};
+		  }
 
 const signup = new SignupForm();
 return (
@@ -157,7 +164,8 @@ return (
 			<AnotherAction
 			text="Already have an account?"
 			button="Sign In"
-			onClick={() => navigate("/signin")} />
+			onClick={() => navigate("/signin")} 
+			/>
 			<Button text="Continue" onClick={() => signup.submit()} disabled />
 			<Alert />
 		</Grid>

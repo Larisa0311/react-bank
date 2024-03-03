@@ -1,6 +1,6 @@
 const {
   TRANSACTION_TYPE,
-} = require("../utils/transaction-type")
+} = require('../utils/transaction-type')
 
 class User {
   static #list = []
@@ -32,8 +32,7 @@ class User {
       this.#list.find(
       (user) => 
       user.email === String(email).toLowerCase(),
-      )
-      || null
+      ) || null
     )
   }
 
