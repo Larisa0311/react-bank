@@ -76,10 +76,10 @@ router.post('/signup-confirm', function (req, res) {
       message: 'Error, required fields are missing!',
     })
   }
-
+console.log("code", code, ", token", token)
   try {
     const session = Session.get(token)
-
+console.log(session)
     if (!session) {
       return res.status(400).json({
         message: 'Error, you are not logged in!',
@@ -106,7 +106,7 @@ router.post('/signup-confirm', function (req, res) {
 
     if (!user) {
       return res.status(400).json({
-        message: 'The user with thisa email does not exist!',
+        message: 'The user with this email does not exist!',
       })
     }
 
@@ -123,6 +123,27 @@ router.post('/signup-confirm', function (req, res) {
 }
 })
 
+router.post('/resend-code', function (req, res) {
+  const { email } = req.query
+
+  if (!email) {
+    return res.status(400).json({
+      message: 'Error, required fields are missing!',
+    })
+  }
+
+  try {
+    Confirm.create(email)
+
+    return res.status(200).json({
+      message: 'Code is sent!',
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
+  }
+})
 
 // Експортуємо глобальний роутер
 module.exports = router

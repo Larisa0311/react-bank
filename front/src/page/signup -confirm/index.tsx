@@ -29,7 +29,7 @@ const SignupConfirmPage: React.FC = () => {
 
  const handleResend = async () => {
 	try {
-		const res = await fetch(`/resend-code?email=${email}`, {
+		const res = await fetch(`http://localhost:4000/resend-code?email=${email}`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -75,7 +75,7 @@ const SignupConfirmPage: React.FC = () => {
 			this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
 			try {
-				const res = await fetch("/signup-confirm", {
+				const res = await fetch("http://localhost:4000/signup-confirm", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -92,7 +92,7 @@ const SignupConfirmPage: React.FC = () => {
 				saveSession(data.session);			
 				navigate("/balance");
 			} else {
-				this.setAlert(ALERT_STATUS.ERROR,data.message);
+				this.setAlert(ALERT_STATUS.ERROR, data.message);
 			}
 			} catch (error) {
 				this.setAlert(
@@ -127,7 +127,7 @@ return (
 			onInput={(e) => signupConfirm.change(e.target.name, e.target.value)} 
 			/>
 			<AnotherAction
-			text="Donot received code?"
+			text="Do not received code?"
 			button="send again"
 			onClick={handleResend} />
 			<Button 

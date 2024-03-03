@@ -86,7 +86,7 @@ const SignupPage: React.FC = () => {
 			this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
 			try {
-				const res = await fetch(`/signup`, {
+				const res = await fetch(`http://localhost:4000/signup`, {
 					method: "POST",
 					headers: {
 					  "Content-Type": "application/json",
