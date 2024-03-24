@@ -10,15 +10,11 @@ import Header from "../../component/header"
 import Heading from "../../component/heading";
 import Grid from "../../component/grid";
 import Field from "../../component/field";
-import FieldPassword from "../../component/field-password";
-import AnotherAction from "../../component/another-action";
 import Alert from "../../component/alert";
 
 import {
 	Form, 
 	REG_EXP_EMAIL, 
-	REG_EXP_PASSWORD, 
-	
 	ALERT_STATUS, 
 	FIELD_ERROR, 
 } from "../../utils/form";
@@ -28,14 +24,13 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../App";
 import { AUTH_DATA_ACTION_TYPE } from "../../App";
 
-const SigninPage: React.FC = () => {
+const RecoveryPage: React.FC = () => {
  const auth = useContext(AuthContext);
  const navigate = useNavigate();
 
- class SigninForm extends Form {
+ class RecoveryForm extends Form {
 	FIELD_NAME = { 
 		EMAIL: "email",
-		PASSWORD: "password",
 	 };
 
 	 validate: (name: string, value: string) => FIELD_ERROR | null = (
@@ -56,11 +51,6 @@ const SigninPage: React.FC = () => {
 			}
 		}
 
-		if (name === this.FIELD_NAME.PASSWORD) {
-			if (!REG_EXP_PASSWORD.test(String(value)))
-			return FIELD_ERROR.PASSWORD;
-		}
-
 		return null;
 	 };
 
@@ -72,7 +62,7 @@ const SigninPage: React.FC = () => {
 			this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
 			try {
-				const res = await fetch(`http://localhost:4000/signin`, {
+				const res = await fetch(`http://localhost:4000/recovery`, {
 					method: "POST",
 					headers: {
 					  "Content-Type": "application/json",
@@ -88,7 +78,7 @@ const SigninPage: React.FC = () => {
 					  payload: data.session,
 					});
 		
-					navigate("/signup-confirm");
+					navigate("/recovery-confirm");
 				  } else {
 					this.setAlert(ALERT_STATUS.ERROR, data.message);
 				  }
@@ -104,43 +94,31 @@ const SigninPage: React.FC = () => {
 			convertData = () => {
 			  return JSON.stringify({
 				[this.FIELD_NAME.EMAIL]: this.value[this.FIELD_NAME.EMAIL],
-				[this.FIELD_NAME.PASSWORD]: this.value[this.FIELD_NAME.PASSWORD],
 			  });
 			};
 		  }
 
-const signin = new SigninForm();
+const recovery = new RecoveryForm();
 return (
 	<Page>
 		<Header />
 		<BackButton />
 	
-		<Heading title="Sign in" subtitle="Select login method" />
+		<Heading title="Recover password" subtitle="Choose a recovery method" />
 		<Grid big>
 			<Field
 			label="Email"
 			name="email"
 			type="email"
 			placeholder="email"
-			onInput={(e) => signin.change(e.target.name, e.target.value)} 
+			onInput={(e) => recovery.change(e.target.name, e.target.value)} 
 			/>
-			<FieldPassword
-			label="Password"
-			name="password"
-			type="password"
-			placeholder="password"
-			onInput={(e) => signin.change(e.target.name, e.target.value)} 
-			/>
-			<AnotherAction
-			text="Forgot your password?"
-			button="Restore"
-			onClick={() => navigate("/recovery")} 
-			/>
-			<Button text="Continue" onClick={() => signin.submit()} disabled />
+					
+			<Button text="Send code" onClick={() => recovery.submit()} disabled />
 			<Alert />
 		</Grid>
 	</Page>
 );
 };
 
-export default SigninPage;
+export default RecoveryPage;

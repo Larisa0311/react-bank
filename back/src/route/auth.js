@@ -113,6 +113,7 @@ router.post('/signup-confirm', function (req, res) {
     })
   }
 
+  console.log("code", code, "token", token)
   try {
     const session = Session.get(token)
 

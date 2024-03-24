@@ -16,25 +16,46 @@ import Alert from "../../component/alert";
 
 import {
 	Form, 
-	REG_EXP_EMAIL, 
 	REG_EXP_PASSWORD, 
-	
 	ALERT_STATUS, 
 	FIELD_ERROR, 
 } from "../../utils/form";
 
-// import { saveSession, getTokenSession, getSession } from "../../utils/session";
+import { saveSession, 
+	//getTokenSession, getSession 
+} from "../../utils/session";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../App";
 import { AUTH_DATA_ACTION_TYPE } from "../../App";
 
-const SigninPage: React.FC = () => {
+const RecoveryConfirmPage: React.FC = () => {
  const auth = useContext(AuthContext);
+//  const email = auth?.state.user.email;
  const navigate = useNavigate();
 
- class SigninForm extends Form {
+ const handleResend = async () => {
+	try {
+		const res = await fetch(`http://localhost:4000/resend-code`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await res.json();
+
+		if (res.ok) {
+		} else {
+			recoveryConfirm.setAlert(ALERT_STATUS.ERROR, data.message);
+		}
+	} catch (error) {
+		recoveryConfirm.setAlert(ALERT_STATUS.ERROR, 'Confirmation failed, please try again!');
+	}
+ }
+
+ class RecoveryConfirmForm extends Form {
 	FIELD_NAME = { 
-		EMAIL: "email",
+		CODE: "code",
 		PASSWORD: "password",
 	 };
 
@@ -48,12 +69,6 @@ const SigninPage: React.FC = () => {
 
 		if (value?.length > 40) {
 			return FIELD_ERROR.BIG;
-		}
-
-		if (name === this.FIELD_NAME.EMAIL) {
-			if (!REG_EXP_EMAIL.test(String(value))) {
-				return FIELD_ERROR.EMAIL;
-			}
 		}
 
 		if (name === this.FIELD_NAME.PASSWORD) {
@@ -72,7 +87,7 @@ const SigninPage: React.FC = () => {
 			this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
 			try {
-				const res = await fetch(`http://localhost:4000/signin`, {
+				const res = await fetch(`http://localhost:4000/recovery-confirm`, {
 					method: "POST",
 					headers: {
 					  "Content-Type": "application/json",
@@ -87,8 +102,8 @@ const SigninPage: React.FC = () => {
 					  type: AUTH_DATA_ACTION_TYPE.LOGIN,
 					  payload: data.session,
 					});
-		
-					navigate("/signup-confirm");
+					saveSession(data.session);
+					navigate("/balance");
 				  } else {
 					this.setAlert(ALERT_STATUS.ERROR, data.message);
 				  }
@@ -103,44 +118,44 @@ const SigninPage: React.FC = () => {
 		
 			convertData = () => {
 			  return JSON.stringify({
-				[this.FIELD_NAME.EMAIL]: this.value[this.FIELD_NAME.EMAIL],
+				[this.FIELD_NAME.CODE]: this.value[this.FIELD_NAME.CODE],
 				[this.FIELD_NAME.PASSWORD]: this.value[this.FIELD_NAME.PASSWORD],
 			  });
 			};
 		  }
 
-const signin = new SigninForm();
+const recoveryConfirm = new RecoveryConfirmForm();
 return (
 	<Page>
 		<Header />
 		<BackButton />
 	
-		<Heading title="Sign in" subtitle="Select login method" />
+		<Heading title="Recover password" subtitle="Write the code you received" />
 		<Grid big>
 			<Field
-			label="Email"
-			name="email"
-			type="email"
-			placeholder="email"
-			onInput={(e) => signin.change(e.target.name, e.target.value)} 
+			label="Code"
+			name="code"
+			type="text"
+			placeholder="123456"
+			onInput={(e) => recoveryConfirm.change(e.target.name, e.target.value)} 
 			/>
 			<FieldPassword
-			label="Password"
+			label="New password"
 			name="password"
 			type="password"
 			placeholder="password"
-			onInput={(e) => signin.change(e.target.name, e.target.value)} 
+			onInput={(e) => recoveryConfirm.change(e.target.name, e.target.value)} 
 			/>
 			<AnotherAction
-			text="Forgot your password?"
-			button="Restore"
-			onClick={() => navigate("/recovery")} 
-			/>
-			<Button text="Continue" onClick={() => signin.submit()} disabled />
+			text="Do not received code?"
+			button="send again"
+			onClick={handleResend} />
+			
+			<Button text="Restore password" onClick={() => recoveryConfirm.submit()} disabled />
 			<Alert />
 		</Grid>
 	</Page>
 );
 };
 
-export default SigninPage;
+export default RecoveryConfirmPage;
