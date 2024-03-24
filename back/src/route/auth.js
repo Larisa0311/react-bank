@@ -22,7 +22,7 @@ User.create({
   email: "alex0603@gmail.com",
   password: 'aZ654321',
 })
-
+//====
 router.post('/signup', function (req, res) {
   try {
   const { firstname, lastname, email, password } = req.body
@@ -41,7 +41,7 @@ router.post('/signup', function (req, res) {
 
     if (user) {
       return res.status(400).json({
-        message: "The user with this email is already registered!",
+        message: "The user with the same name has already exist!",
       })
     }
 
@@ -66,8 +66,44 @@ router.post('/signup', function (req, res) {
     })
   }
 })
+//===
+router.post('/signin', function (req, res) {
+  try {
+  const { email, password } = req.body
+  console.log(req.body);
 
+  if (!email || !password ) {
+    return res.status(400).json({
+      message: "Error. There are no required fields",
+    })
+  }
+    const user = User.getByEmail(email)
 
+    if (!user) {
+      return res.status(400).json({
+        message: "The user with this email does not exist!",
+      })
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({
+        message: "Error! Forgot Your pasword?"
+      })
+    }
+  
+    const session = Session.create(user)
+    
+    return res.status(200).json({
+      message: "Welcome",
+      session,
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
+  }
+})
+//===
 router.post('/signup-confirm', function (req, res) {
   const { code, token } = req.body
 
@@ -76,10 +112,10 @@ router.post('/signup-confirm', function (req, res) {
       message: 'Error, required fields are missing!',
     })
   }
-console.log("code", code, ", token", token)
+
   try {
     const session = Session.get(token)
-console.log(session)
+
     if (!session) {
       return res.status(400).json({
         message: 'Error, you are not logged in!',
@@ -122,7 +158,7 @@ console.log(session)
   })
 }
 })
-
+//====
 router.post('/resend-code', function (req, res) {
   const { email } = req.query
 
@@ -144,6 +180,85 @@ router.post('/resend-code', function (req, res) {
     })
   }
 })
+//=====
+router.post('/recovery', function (req, res) {
+  const {email} = req.body
+  console.log(email)
+
+  if (!email) {
+    return res.status(400).json({
+      message: 'Error, required fields are missing!',
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'The user with this email does not exist!',
+      })
+    }
+
+    Confirm.create(email)
+
+    return res.status(200).json({
+      message: "Password recovery code sent"
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
+  }
+})
+
+//====
+
+router.post('/recovery-confirm', function (req, res) {
+  const { password, code } = req.body
+
+  console.log(password, code)
+
+  if (!code || !password) {
+    return res.status(400).json({
+      message: 'Error, required fields are missing!',
+    })
+  }
+
+  try {
+    const email = Confirm.getData(Number(code))
+
+    if (!email) {
+      return res.status(400).json({
+        message: 'Code does not exist',
+      })
+    }
+
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'The user with this email does not exist!',
+      })
+    }
+
+    user.password = password
+
+    console.log(user)
+
+    const session = Session.create(user)
+
+    return res.status(200).json({
+      message: 'Password changed',
+      session,
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
+  }
+})
+
 
 // Експортуємо глобальний роутер
 module.exports = router

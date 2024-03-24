@@ -12,6 +12,7 @@ import { BrowserRouter, Routes, Route,
 
 import WelcomePage from "./page/welcome";
 import SignupPage from "./page/signup";
+//import SigninPage from "./page/signin";
 import SignupConfirmPage from "./page/signup -confirm";
 
 import AuthRoute from "./component/auth-route";
@@ -106,6 +107,14 @@ const authContextData = {
             <PrivateAuthRoute>
               <SignupConfirmPage />
             </PrivateAuthRoute>
+          }
+      />
+       <Route 
+        path="/signin"
+          element={
+            <AuthRoute>
+              <SignupPage />
+            </AuthRoute>
           }
       />
    
