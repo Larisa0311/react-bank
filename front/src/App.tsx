@@ -17,7 +17,15 @@ import SignupConfirmPage from "./page/signup -confirm";
 import RecoveryPage from "./page/recovery";
 import RecoveryConfirmPage from "./page/recovery-confirm";
 
+import BalancePage from "./page/balance";
+// import NotificationsPage from "./page/notifications";
+// import SettingsPage from "./page/settings";
+// import ReceivePage from "./page/receive";
+// import SendPage from "./page/send";
+// import TransactionPage from "./page/transaction";
+
 import AuthRoute from "./component/auth-route";
+import PrivateRoute from "./component/private-route";
 import PrivateAuthRoute from "./component/private-auth-route";
 
 import { loadSession, saveSession } from "./utils/session";
@@ -28,11 +36,20 @@ const session = loadSession();
 type AuthDataType = {
   token: string | null;
   user: { [key: string]: any};
-}
+};
+
+type DashboardDataType = {
+  user: { [key: string]: any};
+};
 
 type AUTH_DATA_ACTION = {
   type: AUTH_DATA_ACTION_TYPE;
   payload?: any;
+};
+
+type DASHBOARD_DATA_ACTION = {
+  type: DASHBOARD_DATA_ACTION_TYPE;
+  payload: any;
 };
 
 export enum AUTH_DATA_ACTION_TYPE {
@@ -40,12 +57,24 @@ export enum AUTH_DATA_ACTION_TYPE {
   LOGOUT,
 }
 
+export enum DASHBOARD_DATA_ACTION_TYPE {
+  UPDATE,
+}
+
 type AuthContextType = {
   state: AuthDataType;
   dispatch: React.Dispatch<AUTH_DATA_ACTION>;
 };
 
+type DashboardContextType= {
+  state: DashboardDataType;
+  dispatch: React.Dispatch<DASHBOARD_DATA_ACTION>;
+};
+
 export const AuthContext = createContext<AuthContextType | null>(null);
+export const DashboardContext = createContext<DashboardContextType | null>(
+  null
+);
 
 const notSigninUser = {
   token: "",
@@ -69,24 +98,48 @@ const authDataReducer: React.Reducer<AuthDataType, AUTH_DATA_ACTION> = (
         return state;
   }
 };
+
+const dashboardDataReducer: React.Reducer<
+  DashboardDataType,
+  DASHBOARD_DATA_ACTION
+> = (state: DashboardDataType, action: DASHBOARD_DATA_ACTION) => {
+  switch (action.type) {
+    case DASHBOARD_DATA_ACTION_TYPE.UPDATE:
+      const user = action.payload;
+      return { ...state, user: user };
+    default:
+      return state;
+  }
+};
+
 const authDataInit = session ? session : notSigninUser;
 
-
+const dashboardDataInit = { user: {} };
 
 const App: React.FC<{}> = () => {
 const [authData, authDataDispatch] = useReducer(
   authDataReducer,
   authDataInit
 );
+const [dashboardData, dashboardDataDispatch] = useReducer(
+  dashboardDataReducer,
+  dashboardDataInit
+);
 
 const authContextData = {
   state: authData,
   dispatch: authDataDispatch,
+};
+
+const dashboardContextData = {
+  state: dashboardData,
+  dispatch: dashboardDataDispatch,
 }
 
   return (
    <AuthContext.Provider value={authContextData}>
-    <BrowserRouter>
+    <DashboardContext.Provider value={dashboardContextData}>
+    <BrowserRouter basename='/'>
       <Routes>
      <Route 
       index 
@@ -135,8 +188,17 @@ const authContextData = {
             </AuthRoute>
           }
       />
+      <Route
+              path="/balance"
+              element={
+                <PrivateRoute>
+                  <BalancePage />
+                </PrivateRoute>
+              }
+            />
       </Routes>
     </BrowserRouter>
+    </DashboardContext.Provider>
     </AuthContext.Provider>
   );
 }
