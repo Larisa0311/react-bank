@@ -17,9 +17,9 @@ import SignupConfirmPage from "./page/signup -confirm";
 import RecoveryPage from "./page/recovery";
 import RecoveryConfirmPage from "./page/recovery-confirm";
 
-import BalancePage from "./page/balance";
-// import NotificationsPage from "./page/notifications";
-// import SettingsPage from "./page/settings";
+import BalancePage from "./page/balance"; 
+import NotificationsPage from "./page/notifications";
+import SettingsPage from "./page/settings";
 // import ReceivePage from "./page/receive";
 // import SendPage from "./page/send";
 // import TransactionPage from "./page/transaction";
@@ -193,6 +193,22 @@ const dashboardContextData = {
               element={
                 <PrivateRoute>
                   <BalancePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <PrivateRoute>
+                  <NotificationsPage />
+                </PrivateRoute>
+              }
+            />
+             <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <SettingsPage />
                 </PrivateRoute>
               }
             />
