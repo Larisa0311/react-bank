@@ -21,37 +21,15 @@ import {
 	FIELD_ERROR, 
 } from "../../utils/form";
 
-import { saveSession, 
-	//getTokenSession, getSession 
-} from "../../utils/session";
+import { getTokenSession } from "../../utils/session";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../App";
 import { AUTH_DATA_ACTION_TYPE } from "../../App";
 
 const RecoveryConfirmPage: React.FC = () => {
  const auth = useContext(AuthContext);
-//  const email = auth?.state.user.email;
+
  const navigate = useNavigate();
-
- const handleResend = async () => {
-	try {
-		const res = await fetch(`http://localhost:4000/resend-code`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-
-		const data = await res.json();
-
-		if (res.ok) {
-		} else {
-			recoveryConfirm.setAlert(ALERT_STATUS.ERROR, data.message);
-		}
-	} catch (error) {
-		recoveryConfirm.setAlert(ALERT_STATUS.ERROR, 'Confirmation failed, please try again!');
-	}
- }
 
  class RecoveryConfirmForm extends Form {
 	FIELD_NAME = { 
@@ -102,7 +80,6 @@ const RecoveryConfirmPage: React.FC = () => {
 					  type: AUTH_DATA_ACTION_TYPE.LOGIN,
 					  payload: data.session,
 					});
-					saveSession(data.session);
 					navigate("/balance");
 				  } else {
 					this.setAlert(ALERT_STATUS.ERROR, data.message);
@@ -110,7 +87,7 @@ const RecoveryConfirmPage: React.FC = () => {
 				} catch (error) {
 				  this.setAlert(
 					ALERT_STATUS.ERROR,
-					"Registration failed, please try again!"
+					"confirmation failed, please try again!"
 				  );
 				}
 			  }
@@ -120,11 +97,33 @@ const RecoveryConfirmPage: React.FC = () => {
 			  return JSON.stringify({
 				[this.FIELD_NAME.CODE]: this.value[this.FIELD_NAME.CODE],
 				[this.FIELD_NAME.PASSWORD]: this.value[this.FIELD_NAME.PASSWORD],
+				token: getTokenSession(),
 			  });
 			};
 		  }
 
 const recoveryConfirm = new RecoveryConfirmForm();
+
+const handleResend = async () => {
+	try {
+		const res = await fetch(`http://localhost:4000/resend-code`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await res.json();
+
+		if (res.ok) {
+		} else {
+			recoveryConfirm.setAlert(ALERT_STATUS.ERROR, data.message);
+		}
+	} catch (error) {
+		recoveryConfirm.setAlert(ALERT_STATUS.ERROR, 'Confirmation failed, please try again!');
+	}
+ }
+
 return (
 	<Page>
 		<Header />
@@ -135,8 +134,8 @@ return (
 			<Field
 			label="Code"
 			name="code"
-			type="text"
-			placeholder="123456"
+			type="number"
+			placeholder="code"
 			onInput={(e) => recoveryConfirm.change(e.target.name, e.target.value)} 
 			/>
 			<FieldPassword

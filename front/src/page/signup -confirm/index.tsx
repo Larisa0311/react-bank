@@ -123,7 +123,7 @@ return (
 			label="Code"
 			name="code"
 			type="number"
-			placeholder="firstnamecode"
+			placeholder="code"
 			onInput={(e) => signupConfirm.change(e.target.name, e.target.value)} 
 			/>
 			<AnotherAction

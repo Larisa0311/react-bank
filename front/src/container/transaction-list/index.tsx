@@ -1,6 +1,6 @@
 import "./index.css";
 
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext } from "react";
 import { AuthContext, DashboardContext } from "../../App";
 import { TRANSACTION_TYPE } from "../../utils/transaction-type";
 import { useNavigate } from "react-router-dom";
@@ -53,7 +53,7 @@ const TransactionList: React.FC<{}> = () => {
                       <span className="transaction__date">
                         {transaction.date}
                       </span>
-                      <img src="img/point.svg" alt="·" />
+                      <img src="svg/point.svg" alt="·" />
                       <span className="transaction__type">{type?.name}</span>
                     </div>
                   </div>

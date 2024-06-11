@@ -4,10 +4,8 @@ const router = express.Router()
 const { User } = require('../class/user')
 const { Confirm } = require('../class/confirm')
 const { Session } = require('../class/session')
-// const { Notification } = require('../class/notification')
-// const {
-//   NOTIFICATION_TYPE,
-// } = require('../utils/notification-type')
+const { Notification } = require('../class/notification') 
+const {  NOTIFICATION_TYPE, } = require('../utils/notification-type')
 
 User.create({
   firstname: 'Larysa',
@@ -87,19 +85,29 @@ router.post('/signin', function (req, res) {
 
     if (user.password !== password) {
       return res.status(400).json({
-        message: "Error! Forgot Your pasword?"
+        message: "The password is incorrect!",
       })
     }
   
+    if (!user.isConfirm) {
+      Confirm.create(email)
+    }
+
     const session = Session.create(user)
+
+    const notification = Notification.create(NOTIFICATION_TYPE.WARNING, 'New login',)
+
+    user.addNotification(notification)
     
     return res.status(200).json({
-      message: "Welcome",
+      message: "Login successful!",
       session,
     })
   } catch (err) {
+    console.log(err)
+
     return res.status(400).json({
-      message: err.message,
+      message: 'Login error!',
     })
   }
 })
@@ -188,7 +196,7 @@ router.post('/recovery', function (req, res) {
 
   if (!email) {
     return res.status(400).json({
-      message: 'Error, required fields are missing!',
+      message: 'Error, please enter your email address!',
     })
   }
 
@@ -204,11 +212,11 @@ router.post('/recovery', function (req, res) {
     Confirm.create(email)
 
     return res.status(200).json({
-      message: "Password recovery code sent"
+      message: "Code sent!",
     })
   } catch (err) {
     return res.status(400).json({
-      message: err.message,
+      message: 'Error, try adain!',
     })
   }
 })
@@ -231,7 +239,7 @@ router.post('/recovery-confirm', function (req, res) {
 
     if (!email) {
       return res.status(400).json({
-        message: 'Code does not exist',
+        message: 'The code is not valid!',
       })
     }
 
@@ -245,12 +253,17 @@ router.post('/recovery-confirm', function (req, res) {
 
     user.password = password
 
-    console.log(user)
+  const notification = Notification.create(
+    NOTIFICATION_TYPE.WARNING,
+    'Recovery password',
+  )
+
+  user.addNotification(notification)
 
     const session = Session.create(user)
 
     return res.status(200).json({
-      message: 'Password changed',
+      message: 'Password changed!',
       session,
     })
   } catch (err) {

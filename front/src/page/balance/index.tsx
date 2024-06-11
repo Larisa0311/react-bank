@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 
 import "../../normalize.css";
 import "./index.css";
@@ -11,7 +11,6 @@ import {
   DashboardContext,
 } from "../../App";
 import TransactionList from "../../container/transaction-list";
-import { serverUrl } from "../../utils/serverUrl";
 
 const BalancePage: React.FC = () => {
   const auth = useContext(AuthContext);
@@ -24,7 +23,7 @@ const BalancePage: React.FC = () => {
 
   useEffect(() => {
     try {
-      fetch(`${serverUrl}/balance?email=${email}`, {
+      fetch(`http://localhost:4000/balance?email=${email}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

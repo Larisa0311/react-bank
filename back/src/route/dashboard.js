@@ -143,6 +143,323 @@ router.get('/balance', function (req, res) {
 })
 
 //=====
+router.post('/receive', function (req, res){
+  const { amount, companyName, email } = req.body
+
+  if (!amount || !companyName) {
+    return res.status(400).json({
+      message: 'Error, required fields are missing!',
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'The user with this email does not exist!',
+      })
+    }
+
+    Transaction.create(
+      { companyName: companyName },
+      user,
+      amount,
+    )
+
+    const notification = Notification.create(
+      NOTIFICATION_TYPE.ANNOUNCEMENT,
+      `Received $${amount}`,
+    )
+
+    user.addNotification(notification)
+
+    return res.status(200).json({
+      message: 'Money are sent!',
+      user: {
+        balance: user.balance,
+
+        transactions: user.transactions.map(
+          (transaction) => {
+            let firstname
+            let lastname
+            let companyName
+            if (transaction.type === 'PLUS') {
+              companyName = transaction.transaction.from.companyName
+              firstname = transaction.transaction.from.firstname
+              lastname = transaction.transaction.from.lastname
+            } else {
+              firstname = transaction.transaction.to.firstname
+              lastname = transaction.transaction.to.lastname
+            }
+
+            return {
+              type: transaction.type,
+              firstname: firstname,
+              lastname: lastname,
+              companyName: companyName,
+              amount: transaction.transaction.amount,
+              date: transaction.transaction.date,
+              id: transaction.transaction.id,
+            }
+          },
+        ),
+      },
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({
+      message: err,
+    })
+  }
+})
+
+//====
+router.post('/send', function (req, res) {
+  const { amount, senderEmail, email } = req.body
+
+  if (!amount || !email || !senderEmail) {
+    return res.status(400).json({
+      message: 'Error, required fields are missing!',
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+    const senderUser = User.getByEmail(senderEmail)
+
+    if (!user || !senderUser) {
+      return res.status(400).json({
+        message: 'The user with this email does not exist!',
+      })
+    }
+
+    if (user === senderUser) {
+      return res.status(400).json({
+        message: 'You cannot send money to yourself!',
+      })
+    }
+
+    if (senderUser.balance < amount) {
+      return res.status(400).json({
+        message: 'insufficient funds!'
+      })
+    }
+
+    const notification = Notification.create(
+      NOTIFICATION_TYPE.ANNOUNCEMENT,
+      `Received $${amount}`,
+    )
+
+    user.addNotification(notification)
+
+    const SenderNotification = Notification.create(
+      NOTIFICATION_TYPE.ANNOUNCEMENT,
+      `Sent $${amount}`,
+    )
+
+    senderUser.addNotification(SenderNotification)
+
+    Transaction.create(senderUser, user, amount)
+
+    return res.status(200).json({
+      message:'Money are sent!',
+      user: {
+        balance: senderUser.balance,
+
+        transactions: senderUser.transactions.map(
+          (transaction) => {
+            let firstname
+            let lastname
+            let companyName
+            if (transaction.type === 'PLUS') {
+              companyName = transaction.transaction.from.companyName
+              firstname = transaction.transaction.from.firstname
+              lastname = transaction.transaction.from.lastname
+            } else {
+              firstname = transaction.transaction.to.firstname
+              lastname = transaction.transaction.to.lastname
+            }
+
+            return {
+              type: transaction.type,
+              firstname: firstname,
+              lastname: lastname,
+              companyName: companyName,
+              amount: transaction.transaction.amount,
+              date: transaction.transaction.date,
+              id: transaction.transaction.id,
+            }
+          },
+        ),
+      },
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({
+      message: err,
+    })
+  }
+})
+
+//====
+
+router.post('/setting-change-email', function (req, res) {
+  const { email, newemail, password } = req.body
+
+  if (!email || !newemail || !password) {
+    return res.status(400).json({
+      message: 'Error, required fiels are missing!',
+    })
+  }
+
+  const userWithNewEmail = User.getByEmail(newemail)
+
+  if (userWithNewEmail) {
+    return res.status(400).json({
+      message: 'The user with this email is already registered!',
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: `The user with this email does not exist!`,
+      })
+    }
+
+    if (password !== user.password) {
+      return res.status(400).json({
+        message: `Password does not correct!`,
+      })
+    }
+
+    user.email = newemail
+
+    const notification = Notification.create(
+      NOTIFICATION_TYPE.WARNING,
+      'Change email',
+    )
+
+    user.addNotification(notification)
+
+    const session = Session.create(user)
+
+    session.user.isConfirm = true
+
+    return res.status(200).json({
+      message: 'Email is changed!',
+      session,
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({
+      message: err,
+    })
+  }
+})
+
+//====
+
+router.post(
+  '/settings-change-password',
+  function (req, res) {
+    const { email, oldpassword, newpassword } = req.body
+
+    if (!email || !newpassword || !oldpassword) {
+      return res.status(400).json({
+        message: `Error, required fields are missing!`,
+      })
+    }
+
+    if (oldpassword === newpassword) {
+      return res.status(400).json({
+        message: `Password is similary!`,
+      })
+    }
+
+    try {
+      const user = User.getByEmail(email)
+
+      if (!user) {
+        return res.status(400).json({
+          message: `The user with this email does not exist!`,
+        })
+      }
+
+      if (oldpassword !== user.password) {
+        return res.status(400).json({
+          message: `Old password is not correct!`,
+        })
+      }
+
+      user.password = newpassword
+
+      const notification = Notification.create(
+        NOTIFICATION_TYPE.WARNING,
+        'Change password',
+      )
+
+      user.addNotification(notification)
+
+      const session = Session.create(user)
+
+      session.user.isConfirm = true
+
+      return res.status(200).json({
+        message: 'Password is changed!',
+        session,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json({
+        message: err,
+      })
+    }
+  },
+)
+
+//======
+
+router.get('/notifications', function (req, res) {
+  const { email } = req.query
+
+  if (!email) {
+    return res.status(400).json({
+      message: `Error, required fields are missing!`,
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: `The user with this email does not exist!`,
+      })
+    }
+
+    return res.status(200).json({
+      message: 'Data notifications are sent!',
+
+      notifications: user.notifications.map(
+        (notification) => ({
+          message: notification.message,
+          type: notification.type,
+          date: notification.date,
+          id: notification.id,
+        }),
+      ),
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(400).json({
+      message: err,
+    })
+  }
+})
 
 
 // Експортуємо глобальний роутер

@@ -17,7 +17,6 @@ import {
   Form,
   REG_EXP_EMAIL,
   REG_EXP_PASSWORD,
-  REG_EXP_NAME,
   ALERT_STATUS,
   FIELD_ERROR,
 } from "../../utils/form";
@@ -25,10 +24,7 @@ import {
 import {
   AUTH_DATA_ACTION_TYPE,
   AuthContext,
-  DASHBOARD_DATA_ACTION_TYPE,
-  DashboardContext,
 } from "../../App";
-import { serverUrl } from "../../utils/serverUrl";
 
 const SettingsPage: React.FC = () => {
   const auth = useContext(AuthContext);
@@ -74,7 +70,7 @@ const SettingsPage: React.FC = () => {
         this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
         try {
-          const res = await fetch(`${serverUrl}/settings-change-email`, {
+          const res = await fetch(`http://localhost:4000/settings-change-email`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -150,7 +146,7 @@ const SettingsPage: React.FC = () => {
         this.setAlert(ALERT_STATUS.PROGRESS, "Loading...");
 
         try {
-          const res = await fetch(`${serverUrl}/settings-change-password`, {
+          const res = await fetch(`http://localhost:4000/settings-change-password`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

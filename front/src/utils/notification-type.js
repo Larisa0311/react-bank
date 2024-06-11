@@ -3,6 +3,6 @@ const NOTIFICATION_TYPE = {
 	AMMOUNTCEMENT: "Ammountcement",
 };
 
-module.exports= {
+module.exports = {
 	NOTIFICATION_TYPE,
 };

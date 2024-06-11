@@ -1,4 +1,6 @@
-import React, {useContext} from "react";
+import React
+// {useContext} 
+from "react";
 
 import "../../normalize.css";
 import "./index.css";
@@ -21,11 +23,11 @@ import {
 
 // import { saveSession, getTokenSession, getSession } from "../../utils/session";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../App";
-import { AUTH_DATA_ACTION_TYPE } from "../../App";
+// import { AuthContext } from "../../App";
+// import { AUTH_DATA_ACTION_TYPE } from "../../App";
 
 const RecoveryPage: React.FC = () => {
- const auth = useContext(AuthContext);
+//  const auth = useContext(AuthContext);
  const navigate = useNavigate();
 
  class RecoveryForm extends Form {
@@ -73,11 +75,6 @@ const RecoveryPage: React.FC = () => {
 				  const data = await res.json();
 		
 				  if (res.ok) {
-					auth?.dispatch({
-					  type: AUTH_DATA_ACTION_TYPE.LOGIN,
-					  payload: data.session,
-					});
-		
 					navigate("/recovery-confirm");
 				  } else {
 					this.setAlert(ALERT_STATUS.ERROR, data.message);
@@ -85,7 +82,7 @@ const RecoveryPage: React.FC = () => {
 				} catch (error) {
 				  this.setAlert(
 					ALERT_STATUS.ERROR,
-					"Registration failed, please try again!"
+					"Recovery failed, please try again!"
 				  );
 				}
 			  }

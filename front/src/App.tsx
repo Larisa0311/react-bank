@@ -19,10 +19,10 @@ import RecoveryConfirmPage from "./page/recovery-confirm";
 
 import BalancePage from "./page/balance"; 
 import NotificationsPage from "./page/notifications";
-import SettingsPage from "./page/settings";
-// import ReceivePage from "./page/receive";
-// import SendPage from "./page/send";
-// import TransactionPage from "./page/transaction";
+import SettingsPage from "./page/settings"; 
+import ReceivePage from "./page/receive";
+import SendPage from "./page/send";
+import TransactionPage from "./page/transaction";
 
 import AuthRoute from "./component/auth-route";
 import PrivateRoute from "./component/private-route";
@@ -212,11 +212,43 @@ const dashboardContextData = {
                 </PrivateRoute>
               }
             />
+             <Route
+              path="/receive"
+              element={
+                <PrivateRoute>
+                  <ReceivePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/send"
+              element={
+                <PrivateRoute>
+                  <SendPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/transaction/:transactionId"
+              element={
+                <PrivateRoute>
+                  <TransactionPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+            path="*"
+            element={
+              <AuthRoute>
+                <WelcomePage />
+              </AuthRoute>
+            }
+            />
       </Routes>
     </BrowserRouter>
     </DashboardContext.Provider>
     </AuthContext.Provider>
   );
-}
+};
 
 export default App;

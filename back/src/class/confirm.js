@@ -18,9 +18,11 @@ class Confirm {
 
 		setTimeout(() => {
 			this.delete(item.code)
-		}, 1000 * 60 * 60 * 24);
+		}, 1000 * 60 * 60 * 24)
 
-		console.log(this.#list);
+		this.sendMail(data, item.code)
+
+		console.log(this.#list)
 	}
 
 	static delete = (code) => {
@@ -48,13 +50,13 @@ class Confirm {
 			port: 465,
 			secure: true,
 			auth: {
-				user: 'zubenko0311@gmail.com',
-				pass: 'lZubenko_1964',
+				user: '',
+				pass: '',
 			},
 		})
 
 		let mailDetails = {
-			from: 'zubenko0311@gmail.com',
+			from: '',
 			to: email,
 			subject: 'Код підтвердження',
 			html: `<h1>${code}</h1>`,
